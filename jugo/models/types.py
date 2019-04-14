@@ -187,6 +187,10 @@ class LongText(DataType):
     definition = 'LONGTEXT'
     max_length = 4294967295
 
+    def pre_handling(self, value):
+        return f'"{value}"'
+
+
     definition_f = lambda self: 'LONGTEXT'
     default_f = lambda self: ''
     extra_f = lambda self: self.extra
@@ -195,6 +199,10 @@ class LongText(DataType):
 class MediumText(DataType):
     definition = 'MEDIUMTEXT'
     max_length = 16777215
+
+    def pre_handling(self, value):
+        return f'"{value}"'
+
 
     definition_f = lambda self: 'MEDIUMTEXT'
     default_f = lambda self: ''
@@ -205,6 +213,10 @@ class Text(DataType):
     definition = 'TEXT'
     max_length = 65535
 
+    def pre_handling(self, value):
+        return f'"{value}"'
+
+
     definition_f = lambda self: 'TEXT'
     default_f = lambda self: ''
     extra_f = lambda self: self.extra
@@ -213,6 +225,10 @@ class Text(DataType):
 class TinyText(DataType):
     definition = 'TINYTEXT'
     max_length = 225
+
+    def pre_handling(self, value):
+        return f'"{value}"'
+
 
     definition_f = lambda self: 'TINYTEXT'
     default_f = lambda self: ''
