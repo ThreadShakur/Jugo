@@ -81,7 +81,7 @@ def check_for_changes(model):
                     (datatype.unsigned and not 'unsigned' in table_field[6]) or
                     (not datatype.unsigned and 'unsigned' in table_field[6])):
 
-                    if table_field[2] in ('int', 'tinyint') and str(datatype.default) == table_field[1]:
+                    if table_field[2] in ('bigint', 'mediumint', 'smallint', 'int', 'tinyint', 'float') and str(datatype.default) == table_field[1]:
                         continue
 
                     print(f'ALTER field {model.table_name} {param}')

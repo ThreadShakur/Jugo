@@ -84,6 +84,18 @@ class TinyInteger(DataType):
     extra_f = lambda self: self.extra + ' UNSIGNED' if self.unsigned else ''
 
 
+class Float(DataType):
+    definition = 'FLOAT'
+
+    def __init__(self, default=None):
+        self.default = default
+
+    
+    definition_f = lambda self: 'FLOAT'
+    default_f = lambda self: f'DEFAULT {self.default}' if self.default is not None else ''
+    extra_f = lambda self: self.extra
+
+
 class Boolean(DataType):
     definition = 'TINYINT'
 

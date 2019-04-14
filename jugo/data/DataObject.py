@@ -12,9 +12,11 @@ class DataObject():
             if fields[param].__class__.__base__.__name__ == 'DataType' or param == 'id' or param == '__tablename__' or (update_fields and param not in update_fields):
                 continue
 
-            update_query += f'`{param}` = {fields[f"{param}__datatype__"].pre_handling(fields[param])}, '
+            value = fields[f"{param}__datatype__"].pre_handling(fields[param])
 
+            update_query += f'`{param}` = {value if value is not None else "NULL"}, '
 
+        print(update_query)
         db.cursor.execute(f'UPDATE `{self.__tablename__}` SET {update_query[:-2]} WHERE `id` = {fields["id"]}')
 
             
