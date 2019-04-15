@@ -61,11 +61,5 @@ class DataObjects():
         
         db.cursor.execute(f'UPDATE `{self.model.table_name}` SET {update_query[:-2]} WHERE `id` in ({",".join([str(item.id) for item in self.objects])})')
 
-
-        
-
-            
-            
-
-
-        
+    def delete(self):
+        db.cursor.execute(f'DELETE FROM `{self.model.table_name}` WHERE `id` in ({",".join([str(item.id) for item in self.objects])})')

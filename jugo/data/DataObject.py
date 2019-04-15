@@ -16,7 +16,11 @@ class DataObject():
 
             update_query += f'`{param}` = {value if value is not None else "NULL"}, '
 
-        print(update_query)
+
         db.cursor.execute(f'UPDATE `{self.__tablename__}` SET {update_query[:-2]} WHERE `id` = {fields["id"]}')
+
+    def delete(self):
+        fields = self.__dict__
+        db.cursor.execute(f'DELETE FROM `{self.__tablename__}` WHERE `id` = {fields["id"]}')
 
             

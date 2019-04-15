@@ -1,7 +1,7 @@
 from jugo.data.DataObjects import DataObjects
 from jugo.data.DataObject import DataObject
 from jugo.models import types
-from jugo.utils.exceptions import ItemNotInFieldset, UsedReservedVariable
+from jugo.utils.exceptions import ItemNotInFieldset, UsedReservedVariable, UsedExceptedSymbol
 import jugo.utils.connection as db
 import pymysql
 
@@ -20,6 +20,10 @@ class Model:
         for field in self.get_fields(only_own=True).keys():
             if field in RESERVED_VARS:
                 raise UsedReservedVariable(field, self)
+
+            if '__' in field:
+                raise UsedExceptedSymbol(field, self)
+
 
     def get_fields(self, only_own=False, only_base=False):
         base_fields = self.__class__.__base__.__dict__
@@ -56,11 +60,11 @@ class Model:
 
             create_query += f'`{param}` = {fields[param].pre_handling(params[param])}, '
 
+
         db.cursor.execute(f'INSERT INTO `{self.table_name}` SET {create_query[:-2]}')
 
 
-    def objects(self, **params):
-        fields = self.get_fields()
+    def query_builder(self, params, fields):
         fields_keys = fields.keys()
 
         select = []
@@ -74,6 +78,7 @@ class Model:
 
         if params.get('j_limit'):
             limit = params.pop('j_limit')
+
         if params.get('j_order'):
             order_by = params.pop('j_order')
 
@@ -89,20 +94,62 @@ class Model:
                 else:
                     order_by_query += f'`{item}` ASC, '
 
+            order_by_query = order_by_query[:-2]
+
 
         if params:
             where_query = 'WHERE '
             for index, item in enumerate(params):
+                digit = '='
+                value = params[item]
+                command = item.split('__')[-1]
+                item = item.split('__')[0]
+
+
+                if command == 'gt':
+                    digit = '>'
+
+                elif command == 'egt':
+                    digit = '>='
+
+                elif command == 'elt':
+                    digit = '<='
+
+                elif command == 'lt':
+                    digit = '<'
+
+                elif command == 'not':
+                    digit = '<>'
+
+                elif command == 'like':
+                    digit = 'LIKE'
+
+                elif command == 'in':
+                    digit = 'IN'
+
+                elif command == 'notin':
+                    digit = 'NOT IN'
+
                 if item not in fields_keys:
                     raise ItemNotInFieldset(item, self)
 
-                if index == len(params) - 1:
-                    where_query += f'`{item}` = {fields[item].pre_handling(params[item])}'
+
+                if digit == 'IN' or digit == 'NOT IN':
+                    where_query += f'`{item}` {digit} ({",".join([str(fields[item].pre_handling(data)) for data in value]) })'
                 else:
-                    where_query += f'`{item}` = {fields[item].pre_handling(params[item])} AND '
+                    where_query += f'`{item}` {digit} {fields[item].pre_handling(value)}'
 
+                if index != len(params) - 1:
+                    where_query += ' AND '
 
-        self.cursor.execute(f'SELECT {select_query if select_query else "*"} FROM `{self.table_name}` {where_query} {order_by_query[:-2]} {"LIMIT %d" % limit if limit else ""}')
+        return select_query, where_query, order_by_query, limit
+
+    
+    def objects(self, **params):
+        fields = self.get_fields()
+        select_query, where_query, order_by_query, limit = self.query_builder(params, fields)
+
+        self.cursor.execute(f'SELECT {select_query if select_query else "*"} FROM `{self.table_name}` {where_query} {order_by_query} {"LIMIT %d" % limit if limit else ""}')
         data = self.cursor.fetchall()
 
 
@@ -116,5 +163,14 @@ class Model:
             data_objects.objects.append(obj)
 
         return data_objects
+
+
+    def count(self, **params):
+        fields = self.get_fields()
+        select_query, where_query, order_by_query, limit = self.query_builder(params, fields)
+        
+        self.cursor.execute(f'SELECT COUNT(*) AS `count` FROM `{self.table_name}` {where_query} {order_by_query} {"LIMIT %d" % limit if limit else ""}')
+        return self.cursor.fetchone()['count']
+
             
 
