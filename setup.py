@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Jugo",
-    version="1.0.3",
+    version="1.0.4",
     author="Vadim Shpak",
     author_email="lansi_bro@bk.ru",
     description="Tool for easy communicating with MySQL/MariaDB",
@@ -19,4 +19,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'pymysql'
+    ]
 )
