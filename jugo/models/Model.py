@@ -48,6 +48,7 @@ class Model:
     def create(self, **params):
         fields = self.get_fields()
         fields_keys = fields.keys()
+        params_keys = params.keys()
 
         create_query = ''
 
@@ -60,8 +61,27 @@ class Model:
 
             create_query += f'`{param}` = {fields[param].pre_handling(params[param])}, '
 
-
+        
         db.cursor.execute(f'INSERT INTO `{self.table_name}` SET {create_query[:-2]}')
+        db.cursor.execute(f'SELECT MAX(`id`) FROM `{self.table_name}`')
+        
+        id = db.cursor.fetchone()[0]
+
+        obj = DataObject(self.table_name)
+
+        for field in fields:
+            if field == 'id':
+                setattr(obj, field, id)
+                continue
+            
+            if field in params_keys:
+                setattr(obj, field, params[field])
+            else:
+                setattr(obj, field, fields[field].default)
+            
+            setattr(obj, f'{field}__datatype__', fields[field])
+
+        return obj
 
 
     def query_builder(self, params, fields):

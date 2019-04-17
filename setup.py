@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Jugo",
-    version="1.0.4",
+    version="1.0.5",
     author="Vadim Shpak",
     author_email="lansi_bro@bk.ru",
     description="Tool for easy communicating with MySQL/MariaDB",
