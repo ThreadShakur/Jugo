@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/python-3.7-blue.svg) ![](https://img.shields.io/badge/version-0.0.4-green.svg)
 
 ## What is it?
-It implementation of Django QuerySet, which you can use without Django
+It is implementation of Django QuerySet, which you can use without Django
 
 ## How to use
-Read wik: https://github.com/ThreadShakur/Jugo/wiki
+Read wiki: https://github.com/ThreadShakur/Jugo/wiki
