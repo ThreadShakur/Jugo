@@ -1,3 +1,8 @@
-Jugo
+# MySQL/MariaDB communicate tool
+![Jugo](https://i.imgur.com/DM1NSFt.png)
 
-All you need to do, to use this method: read wiki. https://github.com/ThreadShakur/Jugo/wiki
+## What is it?
+It implementation of Django QuerySet, which you can use without Django
+
+## How to use
+Read wik: https://github.com/ThreadShakur/Jugo/wiki
